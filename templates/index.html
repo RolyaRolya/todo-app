@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <!-- Форма добавления новой задачи -->
+    <form class="add-form" action="/add" method="post">
+        <input type="text" name="task_text" placeholder="Что нужно сделать?" required>
+        <button type="submit">➕ Добавить</button>
+    </form>
+
+    <!-- Список задач -->
+    <div class="tasks">
+        {% for task in tasks %}
+        <div class="task">
+            <span>
+                {% if task.done %}
+                    <s>{{ task.text }}</s>
+                {% else %}
+                    {{ task.text }}
+                {% endif %}
+                {% if task.deadline %}
+                    <br><small>⏰ {{ task.deadline }}</small>
+                {% endif %}
+                {% if task.priority %}
+                    <br><small>⭐ {{ task.priority }}</small>
+                {% endif %}
+            </span>
+            <!-- Кнопка "Выполнено" через POST -->
+            <form action="/complete/{{ task.id }}" method="post">
+                <button type="submit" title="Выполнено / Не выполнено">✅</button>
+            </form>
+            <!-- Кнопка "Удалить" через POST -->
+            <form action="/delete/{{ task.id }}" method="post">
+                <button type="submit" title="Удалить">🗑</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p><small>Всего задач: {{ tasks|length }}</small></p>
+
+{% endblock %}

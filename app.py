@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from storage import load_tasks, save_tasks
 
 app = FastAPI()
@@ -9,6 +9,10 @@ def get_next_id(tasks: list) -> int:
         return 1
     max_id = max(task.get("id", 0) for task in tasks)
     return max_id + 1
+
+@app.get("/favicon.ico")
+async def favicon():
+    return Response(status_code=204)
 
 @app.get("/")
 async def read_tasks():

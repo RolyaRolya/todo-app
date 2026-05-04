@@ -1,8 +1,10 @@
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, Request
+from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from storage import load_tasks, save_tasks
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
 def get_next_id(tasks: list) -> int:
     if not tasks:
@@ -10,13 +12,14 @@ def get_next_id(tasks: list) -> int:
     max_id = max(task.get("id", 0) for task in tasks)
     return max_id + 1
 
+@app.get("/", response_class=HTMLResponse)
+async def read_tasks(request: Request):
+    tasks = load_tasks()
+    return templates.TemplateResponse("index.html", {"tasks": tasks, "request": request})
+
 @app.get("/favicon.ico")
 async def favicon():
     return Response(status_code=204)
-
-@app.get("/")
-async def read_tasks():
-    tasks = load_tasks()
 
 @app.post("/add")
 async def add_task(task_text: str = Form(...),
